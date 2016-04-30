@@ -1,24 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package othello.game;
 
+import java.awt.Image;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import othello.board.Board;
 import othello.board.Disk;
 import othello.board.Field;
 import othello.board.Field.Direction;
 
-/**
- *
- * @author Jan Nosal Andrea Stejskalova
- */
 public class Player {
     public boolean isWhite;
     public String color;
-    public int count;
+    public int score = 2;
            
+    /* Konstruktor Player */
     public Player(boolean isWhite) {
         this.isWhite = isWhite;
         if(this.isWhite == true){
@@ -33,10 +29,12 @@ public class Player {
         return this.color;
     }
     
+    /* Zmena hrace */
     public void turn(){
         isWhite = !isWhite;
     }
     
+    /* Zda muze hrac na policku vlozit kamen */
     public boolean canPutDisk(Field field){
         return (field.canPutDisk(new Disk(this.isWhite)));
     }
@@ -45,27 +43,46 @@ public class Player {
         this.undo = undo;
     }*/
     
+    /* Konec hry */
     public boolean emptyPool() {
-        return this.count == 0;
+        return this.score == 0; // TODO
     }
     
+    /* Inicializace hracovych kamenu*/
     public void init(Board board){
-        this.count -= 2;
-        this.count = board.getNumberDisks();
-        int center = board.getSize() / 2;
+        this.score = board.getNumberDisks();
+        int center = board.getSize()/2;
+
         if (this.isWhite) {
-            board.getField(center, center).putDisk(new Disk(true));
-            board.getField(center + 1, center + 1).putDisk(new Disk(true));
-        } else {
-            board.getField(center + 1, center).putDisk(new Disk(false));
-            board.getField(center, center + 1).putDisk(new Disk(false));
+            try 
+            {
+                Image img = ImageIO.read(getClass().getResource("/images/disk_white.png"));
+                Gui.cell[center-1][center].setIcon(new ImageIcon(img));
+                Gui.cell[center][center-1].setIcon(new ImageIcon(img));
+            } catch (IOException ex) {}
+                
+            board.getField(center-1, center).putDisk(new Disk(this.isWhite));
+            board.getField(center, center-1).putDisk(new Disk(this.isWhite));            
+        }
+        else {
+            try 
+            {
+                Image img = ImageIO.read(getClass().getResource("/images/disk_black.png"));
+                Gui.cell[center-1][center-1].setIcon(new ImageIcon(img));
+                Gui.cell[center][center].setIcon(new ImageIcon(img));
+            } catch (IOException ex) {}
+
+            board.getField(center-1, center-1).putDisk(new Disk(this.isWhite));
+            board.getField(center, center).putDisk(new Disk(this.isWhite));     
         }
     }    
-    
+
+    /* Je hrac bily? */
     public boolean isWhite(){
         return this.isWhite;
     }
     
+    /* Vlozeni disku */
     public boolean putDisk(Field field){
         boolean canPut = false;
         if (field.getDisk() == null) {
@@ -74,7 +91,7 @@ public class Player {
             }
             if (canPut) {
                 field.putDisk(new Disk(isWhite));
-                this.count--;
+                this.score--;
             }
         }
         return (canPut);
@@ -96,5 +113,26 @@ public class Player {
             field.getDisk().turn();
         }
         return (canPut);
+    }
+    
+    /* Zapsani skore */
+    public void putScore(int score){
+        this.score += score;
+    }
+
+    /* Vypsani skore */
+    public int getScore(){
+        return this.score;
+    }
+    
+    /* Policka, na která lze polozit dalsi kamen */
+    public void legalMove(Field field, int row, int col) {
+        if(field.canPutDisk(new Disk(this.isWhite))){
+            try 
+            {
+                Image img = ImageIO.read(getClass().getResource("/images/field_legal.png"));
+                Gui.cell[row][col].setIcon(new ImageIcon(img));
+            } catch (IOException ex) {}
+        }
     }
 }

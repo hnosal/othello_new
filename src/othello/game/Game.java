@@ -1,29 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package othello.game;
 
 import othello.board.Board;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 
-/**
- *
- *  @author Jan Nosal Andrea Stejskalova
- */
 public class Game {
     private Board board;
     public Player firstPlayer = null;
     public Player secondPlayer = null;
-    public boolean currentPlayer = true; //first player
+    public boolean currentPlayer = true; //true -> first player -> white, false -> second player -> black
     
+    /* Konstruktor Game */
     public Game(Board board){
         this.board = board;
         //this.actionUndo = new Undo();
     }
     
+    /* Pridani hrace do hry */
     public boolean addPlayer(Player player) {
         if (this.firstPlayer != null) {
             if (firstPlayer.isWhite() == player.isWhite()) {
@@ -43,11 +34,12 @@ public class Game {
         else {
             return false;
         }
-        player.init(this.board);
+        player.init(this.board); // inicializace pocatecnich kamenu hrace
         //player.setUndo(this.actionUndo);
         return true;
     }
 
+    /* Aktualni hrac */
     public Player currentPlayer() {
         if(this.currentPlayer){
             return this.firstPlayer;
@@ -56,11 +48,13 @@ public class Game {
             return this.secondPlayer;
     }
     
+    /* Dalsi hrac na rade*/
     public Player nextPlayer() {
         this.currentPlayer = (this.currentPlayer == false);
         return this.currentPlayer();
     }
     
+    /* Ziskani desky */
     public Board getBoard() {
         return this.board;
     }         

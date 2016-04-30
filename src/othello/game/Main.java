@@ -11,12 +11,18 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class Main extends JFrame{
+public class Main extends JFrame {
     
-    private static JPanel panel;
-    
-    public Main(int flag){
+    private static JPanel panel; // GUI
+        
+    /* Konstruktor */
+    public Main(int flag) {
+
         super("Othello");
+                
+        /**
+         * GUI
+         */
         setLayout(new BorderLayout());
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         int height = screen.height;
@@ -24,7 +30,7 @@ public class Main extends JFrame{
         setSize(width/2, height/2);
         setLocationRelativeTo(null);
         
-        /*Hlavní část menu*/
+        /* Horni lista GUI s nabidkou */
         JMenuBar menubar = new JMenuBar();
 	setJMenuBar(menubar);
         JMenu file = new JMenu("Game");
@@ -34,8 +40,8 @@ public class Main extends JFrame{
         JMenu about = new JMenu("About");
         menubar.add(about);
         
-        /*item menu*/
-        
+        /* Jednotlive polozky nabidek z horni listy */
+        /* Game */
         JMenuItem newGame = new JMenuItem("New");
         file.add(newGame);
         JMenuItem loadGame = new JMenuItem("Load");
@@ -45,6 +51,7 @@ public class Main extends JFrame{
         JMenuItem exitGame = new JMenuItem("Exit");
         file.add(exitGame);
         
+        /* Board */
         JMenuItem six = new JMenuItem("6x6");
         board.add(six);
         JMenuItem eight = new JMenuItem("8x8");
@@ -54,128 +61,127 @@ public class Main extends JFrame{
         JMenuItem twelve = new JMenuItem("12x12");
         board.add(twelve);
         
+        /* About */
         JMenuItem help = new JMenuItem("Help");
         about.add(help);
         
-        if(flag == 0){
-            panel = new Gui(8,8);
-            add(panel, BorderLayout.CENTER);
-            setLocationByPlatform(true);
-            setSize(600, 473);
-            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            setResizable(true);
-            setVisible(true);
-        }
-        else if(flag == 1){
-            panel = new Gui(6,6);
-            add(panel, BorderLayout.CENTER);
-            setLocationByPlatform(true);
-            setSize(500, 373);
-            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            setResizable(true);
-            setVisible(true);
+        /**
+         * Vyber velikosti desky
+         */
+        switch(flag) {
+            case 6:
+                panel = new Gui(6,6);
+                add(panel, BorderLayout.CENTER);
+                setLocationByPlatform(true);
+                setSize(500, 346);
+                setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                setResizable(false);
+                setVisible(true);
+                break;
+            case 10:
+                panel = new Gui(10,10);
+                add(panel, BorderLayout.CENTER);
+                setLocationByPlatform(true);
+                setSize(700, 553);
+                setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                setResizable(false);
+                setVisible(true);
+                break;
+            case 12:
+                panel = new Gui(12,12);
+                add(panel, BorderLayout.CENTER);
+                setLocationByPlatform(true);
+                setSize(800, 636);
+                setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                setResizable(false);
+                setVisible(true);
+                break;
+            default:
+                panel = new Gui(8,8);
+                add(panel, BorderLayout.CENTER);
+                setLocationByPlatform(true);
+                setSize(600, 450);
+                setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                setResizable(false);
+                setVisible(true);
+                break;
         }
         
-        else if(flag == 3){
-            panel = new Gui(10,10);
-            add(panel, BorderLayout.CENTER);
-            setLocationByPlatform(true);
-            setSize(700, 573);
-            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            setResizable(true);
-            setVisible(true);
-        }
-        
-        else if(flag == 4){
-            panel = new Gui(12,12);
-            add(panel, BorderLayout.CENTER);
-            setLocationByPlatform(true);
-            setSize(800, 673);
-            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            setResizable(true);
-            setVisible(true);
-        }
-        
-        newGame.addActionListener(new ActionListener(){
+        /**
+         * Listenery 
+         */
+        newGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                new Main(0);
+                new Main(8);
                 this.dispose();
             }
             private void dispose() {}
         });
         
-        six.addActionListener(new ActionListener(){
+        six.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                new Main(1);
+                new Main(6);
                 this.dispose();
-
             }
-
-            private void dispose() {
-            }
+            private void dispose() {}
         });
         
-        eight.addActionListener(new ActionListener(){
+        eight.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                new Main(0);
+                new Main(8);
                 this.dispose();
             }
-
-            private void dispose() {
-            }
+            private void dispose() {}
         });
         
-        ten.addActionListener(new ActionListener(){
+        ten.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                new Main(3);
+                new Main(10);
                 this.dispose();
             }
-
-            private void dispose() {
-            }
+            private void dispose() {}
         });
         
-        twelve.addActionListener(new ActionListener(){
+        twelve.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                new Main(4);
+                new Main(12);
                 this.dispose();
             }
-
-            private void dispose() {
-            }
+            private void dispose() {}
         });
         
-        
-        exitGame.addActionListener(new ActionListener(){
+        exitGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 System.exit(0);
             }
         });
         
-        help.addActionListener(new ActionListener(){
+        help.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 		JOptionPane.showMessageDialog(menubar,
                 "Seminář Java\nProjekt: Othello\nVypracovali:\nAndrea Stejskalová\nJan Nosál","Informace",JOptionPane.WARNING_MESSAGE);
             }
-        });        
+        });
     }
     
+    /**
+     * MAIN funkce
+     * @param args 
+     */
     public static void main(String[] args) {        
-
+        
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 new Main(0);
-                
             }
         });   
-    }
-    
+    }  
 }

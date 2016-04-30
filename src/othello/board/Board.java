@@ -1,26 +1,16 @@
- /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package othello.board;
 
-/**
- *
- *  @author Jan Nosal Andrea Stejskalova
- */
 public class Board extends java.lang.Object {
     
     public Field[][] field;
     public Rules rules;
         
+    /* Konstruktor Board */
     public Board(Rules rules){
         this.field = new Field[rules.getSize() + 2][rules.getSize() + 2];
         this.rules = rules;
         this.genPole();
         this.genOkoli(); 
-        
-        
     }        
        
     private void genPole(){    
@@ -62,7 +52,7 @@ public class Board extends java.lang.Object {
         }
         else return null;
     }
-    
+   
     public Rules getRules(){
         return this.rules;
     }
@@ -70,10 +60,12 @@ public class Board extends java.lang.Object {
     public int getNumberDisks(){
         return (this.rules.numberDisks());
     }
-
-    public int play(int xCor, int yCor) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
     
+    public int play(int row, int col) {
+        if(field[row][col].isEmpty()){
+            field[row][col].putDisk(new Disk(true));
+        }
+        return 0;
+    }    
     
 }

@@ -1,3 +1,9 @@
+/**
+ * Othello Game
+ * Project for IJA 2015/2016
+ * @author Andrea Stejskalova & Jan Nosal
+ */
+
 package othello.game;
 
 import java.awt.Color;
@@ -10,125 +16,124 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import othello.board.Board;
-import othello.board.Disk;
-import othello.board.Field;
-import othello.board.Rules;
 
-public class Gui extends JPanel{
+public class Gui extends JPanel {
     JPanel panel;
-    private JPanel boardPanel;
-    private JButton[] cell;
-    private Board board;
-    private Disk white = new Disk(true);
-    private Disk black = new Disk(false);
-    private static Board start;
-    static JLabel score1;
-    static JLabel score2;
-    private  int userCont = 0;
-    static public int playerScore = 2; 
-    static public int pcScore = 2;
-    private static int center;
-    static ArrayList<Board>  arrReversi= new ArrayList<Board>();
-
-    private final int size;
+    private JPanel boardPanel; // hraci deska
+    static JButton[][] cell; // policka na hraci desce
+    static JLabel score1; // skore prvniho (cerneho) hrace
+    static JLabel score2; // skore druheho (bileho) hrace
     
-    public Gui(int rows,int cols) {
+    private final Board board; // hraci deska
+    private final Game game; // konkretni hra
+    static public int scoreOne; // skore/pocet kamenu prvniho (cerneho) hrace
+    static public int scoreTwo; // skore/pocet kamenu druheho hrace (pocitac)
+    private final int size; // velikost hraci desky
+    static ArrayList<Board>  arrReversi= new ArrayList<>(); // seznam vsech hracich desek
+
+    /* Konstruktor */
+    public Gui(int rows,int cols) { // vyvolani GUI na zaklade velikosti hraci desky (6x6, 8x8, 10x10, 12x12)
         super(new BorderLayout());    
         setPreferredSize(new Dimension(800,700));
         setLocation(0, 0);
         
-        center = rows/2;
-
-        this.size = rows;
-        ReversiRules rules = new ReversiRules(this.size);
-            //TODOO
-        Board hraciP = new Board(rules);
-        this.board = hraciP;
-        Game game = new Game(board);
-        Field[][] field = new Field[rows][cols];
-        
-        
-        
         panel = new JPanel();
         panel.setPreferredSize(new Dimension(800,60));
+        boardPanel = new JPanel(new GridLayout(rows,cols)); // hraci deska
+        cell = new JButton[rows][cols]; // policka na hraci desce
         
-        boardPanel = new JPanel(new GridLayout(rows,cols));
-        cell = new JButton[rows*cols];
-        int k=0;
-        
-        for(int row = 0; row < rows; row++) 
-        {
-            for(int colum=0; colum < cols; colum++) 
-            {
-                cell[k] = new JButton();
-                cell[k].setSize(48, 48);
-                cell[k].setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                if(board.field[row][colum].isEmpty() == true && row == center && colum == center-1 || row == center-1 && colum == center){
-                    if(board.field[row][colum].putDisk(white)) {
-                        try 
-                        {
-                            Image img = ImageIO.read(getClass().getResource("/images/disk_white.png"));
-                            cell[k].setIcon(new ImageIcon(img));
-                        } catch (IOException ex) {}
-                        
-                    }
-                }
-                else if(board.field[row][colum].isEmpty() == true && row == center && colum == center || row == center-1 && colum == center-1){
-                    if(board.field[row][colum].putDisk(black)){
-                        try 
-                        {
-                            Image img = ImageIO.read(getClass().getResource("/images/disk_black.png"));
-                            cell[k].setIcon(new ImageIcon(img));
-                        } catch (IOException ex) {}     
-                    }                   
-                }
-            
-                else if(row == center && colum == center-2 || row == center+1 && colum == center-1 || 
-                        row == center-2 && colum == center || row == center-1 && colum == center+1 )
-                {
-                    try 
-                    {
-                        Image img = ImageIO.read(getClass().getResource("/images/field_legal.png"));
-                        cell[k].setIcon(new ImageIcon(img));
-                    } catch (IOException ex) {} 
-                }
-                else{
-                    try 
-                    {
-                        Image img = ImageIO.read(getClass().getResource("/images/field_bg.png"));
-                        cell[k].setIcon(new ImageIcon(img));
-                    } catch (IOException ex) {}
-                }
+        /* Inicializace promennych a objektu */
+        this.size = rows;
+        ReversiRules rules = new ReversiRules(this.size);
+        this.board = new Board(rules); // vytvoreni desky s hracimi policky
+        this.game = new Game(this.board); // vytvoreni nove hry s vytvořenou deskou
+        Player one = new Player(true); // vytvoreni bileho hrace
+        Player two = new Player(false); // vytvoreni cerneho hrace
+        this.scoreOne = one.getScore(); // skore bileho hrace
+        this.scoreTwo = two.getScore(); // skore cerneho hrace
 
-                cell[k].addActionListener(new MyAction(rows,cols) {
+        /**
+         * Inicializace vsech policek na "prazdna"
+         */
+        for(int row = 0; row < rows; row++) {
+            for(int col = 0; col < cols; col++) {
+                cell[row][col] = new JButton();
+                cell[row][col].setSize(48, 48);
+                cell[row][col].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                /* Nastaveni pozadi policka */
+                try 
+                {
+                    Image img = ImageIO.read(getClass().getResource("/images/field_bg.png"));
+                    cell[row][col].setIcon(new ImageIcon(img));
+                } catch (IOException ex) {}
+                
+                /* Po kliknuti na policko dej se vule bozi :D */
+                cell[row][col].addActionListener(new MyAction(rows,cols) {
+
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        for(int i = 0;i<rows*cols;i++){
-                            if(e.getSource() == cell[i]){
-                                System.out.println("button: "+i);  
-                                int xCor,yCor;
-                                int count = -100,point;
-                                int arr[] = new int[3];
+                        
+                        for(int row = 0; row < rows; row++){
+                            for(int col = 0; col < cols; col++){
                                 
-                                if(i == 0){
-                                    xCor = 0;
-                                    yCor = 0;
-                                }
-                                else{
-                                    xCor = i%rows;
-                                    yCor = i/cols;
+                                if(e.getSource() == cell[row][col]){
+                                    System.out.println("button: "+row+","+col);
+    
+                                    /* ------ zkouska - nefunkcni ------ */
+                                    if(game.currentPlayer().isWhite){
+                                        try 
+                                        {
+                                            Image img = ImageIO.read(getClass().getResource("/images/disk_white.png"));
+                                            cell[row][col].setIcon(new ImageIcon(img));
+                                        } catch (IOException ex) {}
+                                        game.currentPlayer().turn();
+                                        for(int i = 0; i < rows; i++){
+                                            for(int j = 0; j < cols; j++){
+                                                game.currentPlayer().legalMove(board.field[i][j], i, j);
+                                            }
+                                        }                                
+                                    }
+                                    else if(!game.currentPlayer().isWhite){
+                                        try 
+                                        {
+                                            Image img = ImageIO.read(getClass().getResource("/images/disk_black.png"));
+                                            cell[row][col].setIcon(new ImageIcon(img));
+                                        } catch (IOException ex) {}
+                                        game.currentPlayer().turn();
+                                        for(int i = 0; i < rows; i++){
+                                            for(int j = 0; j < cols; j++){
+                                                game.currentPlayer().legalMove(board.field[i][j], i, j);
+                                            }
+                                        }
+                                    }
+                                    /* ------------------------------- */
                                 }
                             }
                         }
                     }
                 });
-                
-                boardPanel.add(cell[k]);
-                k++;
+               
+                boardPanel.add(cell[row][col]);
             }
         }
+                
         add(boardPanel, BorderLayout.CENTER);
+
+        /**
+         * Pridani 2 hracu do hry
+         */
+        game.addPlayer(one);
+        game.addPlayer(two);
         
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < cols; j++){
+                game.currentPlayer().legalMove(board.field[i][j], i, j);
+            }
+        }
+
+        /**
+         * GUI vypis hracu a jejich skore
+         */
         JPanel scorePanel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         scorePanel.setPreferredSize(new Dimension(210,800));
@@ -145,12 +150,13 @@ public class Gui extends JPanel{
             Image img = ImageIO.read(getClass().getResource("/images/disk_white.png"));
             light.setIcon(new ImageIcon(img));
         } catch (IOException ex) {}
+        
         score1 = new JLabel();
-        score1.setText(" Player : " + playerScore + "  ");
+        score1.setText(" Player : " + this.scoreOne + "  ");
         score1.setFont(new Font("Serif", Font.BOLD, 16));
         
         score2 = new JLabel();   
-        score2.setText(" Computer : " + pcScore + "  ");
+        score2.setText(" Computer : " + this.scoreTwo + "  ");
         score2.setFont(new Font("Serif", Font.BOLD, 16));        
                
         c.gridx = 0;
@@ -171,7 +177,6 @@ public class Gui extends JPanel{
         
         scorePanel.add(light);
         scorePanel.add(score2);
-        
     }
     
     private static abstract class MyAction implements ActionListener {

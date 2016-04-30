@@ -13,7 +13,7 @@ import othello.board.Field;
  *  @author Jan Nosal Andrea Stejskalova
  */
 public class ReversiRules extends java.lang.Object implements Rules{
-    private int disk;
+    //private int disk;
     private final int size;
     
     public ReversiRules(int size) {
@@ -27,7 +27,7 @@ public class ReversiRules extends java.lang.Object implements Rules{
     
     @Override
     public int numberDisks(){
-        int count = this.size*this.size/2;
+        int count = this.size*this.size;
         return count;
     }
     
