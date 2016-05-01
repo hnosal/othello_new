@@ -17,16 +17,15 @@ public class Player {
     /* Konstruktor Player */
     public Player(boolean isWhite) {
         this.isWhite = isWhite;
-        if(this.isWhite == true){
-            this.color = "white";
-        }
-        else 
-            this.color = "black";
     }
     
     @Override
     public String toString(){
-        return this.color;
+        if(this.isWhite){
+            return "white";
+        }
+        else 
+            return "black";
     }
     
     /* Zmena hrace */

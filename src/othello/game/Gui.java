@@ -75,37 +75,21 @@ public class Gui extends JPanel {
                         
                         for(int row = 0; row < rows; row++){
                             for(int col = 0; col < cols; col++){
-                                
+                               
                                 if(e.getSource() == cell[row][col]){
                                     System.out.println("button: "+row+","+col);
     
                                     /* ------ zkouska - nefunkcni ------ */
-                                    if(game.currentPlayer().isWhite){
-                                        try 
-                                        {
-                                            Image img = ImageIO.read(getClass().getResource("/images/disk_white.png"));
-                                            cell[row][col].setIcon(new ImageIcon(img));
-                                        } catch (IOException ex) {}
-                                        game.currentPlayer().turn();
-                                        for(int i = 0; i < rows; i++){
-                                            for(int j = 0; j < cols; j++){
-                                                game.currentPlayer().legalMove(board.field[i][j], i, j);
-                                            }
-                                        }                                
-                                    }
-                                    else if(!game.currentPlayer().isWhite){
-                                        try 
-                                        {
-                                            Image img = ImageIO.read(getClass().getResource("/images/disk_black.png"));
-                                            cell[row][col].setIcon(new ImageIcon(img));
-                                        } catch (IOException ex) {}
-                                        game.currentPlayer().turn();
-                                        for(int i = 0; i < rows; i++){
-                                            for(int j = 0; j < cols; j++){
-                                                game.currentPlayer().legalMove(board.field[i][j], i, j);
+                                        if(canInsert(row,col)){
+                                            coloring();
+                                            if(!isEnd()){
+                                                pas();
                                             }
                                         }
-                                    }
+                                        else{
+                                            
+                                        }
+                                    
                                     /* ------------------------------- */
                                 }
                             }
@@ -177,6 +161,138 @@ public class Gui extends JPanel {
         
         scorePanel.add(light);
         scorePanel.add(score2);
+    }
+    
+    public boolean canInsert(int i,int j){
+        boolean playing = this.game.currentPlayer;
+        if(playing){
+            if(this.game.firstPlayer.putDisk(this.board.getField(i, j))){
+                return true;
+            }
+            else{
+                if(this.game.secondPlayer.putDisk(this.board.getField(i,j))){
+                    return true;
+                }
+            }   
+        }
+        return false;
+    }
+    
+    private void coloring(){ 
+        for(int row = 0;row<this.size;row++){
+            for(int col = 0; col<this.size;col++){
+                if(this.board.getField(row, col).getDisk() != null){
+                    if(this.board.getField(row, col).getDisk().isWhite()){
+                        this.scoreOne++;
+                        try 
+                        {
+                            Image img = ImageIO.read(getClass().getResource("/images/disk_white.png"));
+                            cell[row][col].setIcon(new ImageIcon(img));
+                        } catch (IOException ex) {}
+                        game.currentPlayer().turn();
+                        for(int i = 0; i < this.size; i++){
+                            for(int j = 0; j < this.size; j++){
+                                game.currentPlayer().legalMove(board.field[i][j], i, j);
+                            }
+                        }                                 
+                }
+                    else if(!this.board.getField(row, col).getDisk().isWhite()){
+                        this.scoreTwo++;
+                        try 
+                        {
+                            Image img = ImageIO.read(getClass().getResource("/images/disk_black.png"));
+                            cell[row][col].setIcon(new ImageIcon(img));
+                        } catch (IOException ex) {}
+                        game.currentPlayer().turn();
+                        for(int i = 0; i < this.size; i++){
+                            for(int j = 0; j < this.size; j++){
+                                game.currentPlayer().legalMove(board.field[i][j], i, j);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        this.game.nextPlayer();
+        this.game.currentPlayer = !this.game.currentPlayer;
+        String vypis = this.game.toString();
+        if(this.game.currentPlayer){
+            vypis = "white";
+        }
+        else{
+            vypis = "black";  
+        }
+        
+        System.out.println("Hrac na tahu"+vypis);
+        
+        
+    }
+    
+    private boolean pas(){
+        for (int i = 0; i < this.size; i++) {
+             for (int j = 0; j < this.size; j++) {
+                  boolean hraje = game.currentPlayer;
+         if(hraje) {
+             if(this.game.firstPlayer.canPutDisk(this.board.getField(i, j))) {
+                 return false;
+             }              
+         } else {
+             if(this.game.secondPlayer.canPutDisk(this.board.getField(i, j))) {
+                 return false;
+             }
+         }
+             }
+         }
+
+         return true;
+    }
+    
+    private boolean isEnd(){
+        int countWhite = 0;
+        int countBlack = 0;
+        for(int i = 0;i<this.size;i++){
+            for(int j = 0;j<this.size;j++){
+                if(this.board.getField(i, j).getDisk() == null){
+                    return false;
+                }
+            }
+        }
+        for(int k = 0;k<this.size;k++){
+            for(int l = 0;l<this.size;l++){
+                if(this.board.getField(k, l).getDisk() != null){
+                    if(this.board.getField(k, l).getDisk().isWhite()){
+                        countWhite++;
+                    }
+                    else{
+                        countBlack++;
+                    }
+                }
+            }
+        }
+        int mySize = this.size*this.size;
+        int sum = mySize - (countWhite+countBlack);
+        if(sum!=0){
+            if(countWhite>countBlack){
+                countWhite += sum;
+            }
+            else if(countBlack>countWhite){
+                countBlack += sum;
+            }
+            else{
+                countBlack += sum/2;
+                countWhite += sum/2;
+            }
+        }
+        if(countWhite > countBlack){
+            System.out.println("Vitezi bily hrac");
+        }
+        else if(countBlack > countWhite){
+            System.out.println("Vitezi cerny hrac");
+        }
+        else{
+            System.out.println("Remiza");
+        }
+        return true;
     }
     
     private static abstract class MyAction implements ActionListener {

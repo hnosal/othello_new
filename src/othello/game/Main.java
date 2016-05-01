@@ -113,46 +113,36 @@ public class Main extends JFrame {
         newGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                new Main(8);
-                this.dispose();
+                new Main(0);
             }
-            private void dispose() {}
         });
         
         six.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 new Main(6);
-                this.dispose();
             }
-            private void dispose() {}
         });
         
         eight.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                new Main(8);
-                this.dispose();
+                new Main(0);
             }
-            private void dispose() {}
         });
         
         ten.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 new Main(10);
-                this.dispose();
             }
-            private void dispose() {}
         });
         
         twelve.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 new Main(12);
-                this.dispose();
             }
-            private void dispose() {}
         });
         
         exitGame.addActionListener(new ActionListener() {
